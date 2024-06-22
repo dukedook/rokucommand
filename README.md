@@ -8,6 +8,6 @@
 
  * Keypresses can be repeated quickly by appending a number, ie `left 5`
 
- Use "launch" to launch or install an app either by name or by APP_ID.  Names are taken from "Roku Apps.txt" he same folder.  ie. `launch youtube`
+ Use "launch" to launch or install an app either by name or by APP_ID.  Names are taken from "Roku Apps.txt" in the same folder.  ie. `launch youtube`
 
 Inputs that are not keypresses or apps will be automatically interpreted as text, and typed — ie, for a streaming service\'s search engine.
