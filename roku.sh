@@ -11,9 +11,10 @@ echo Keypresses are typed as-is, and include:
 echo "Home" "Rev" "Fwd" "Play" "Select" "Left" "Right" "Down" "Up" "Back" "InstantReplay" "Info" "Backspace" "Search" "Enter" "VolumeDown" "VolumeUp" "VolumeMute" "PowerOff" "PowerOn" "ChannelUp" "ChannelDown" "InputTuner" "InputHDMI1" "InputHDMI2" "InputHDMI3" "InputHDMI4" "InputAV1"
 echo
 echo * Keypresses can be repeated quickly by appending a number, ie `left 5`
+echo
 echo Use "launch" to launch or install an app either by name or by APP_ID.  Names are taken from "Roku Apps.txt" in the same folder.  ie. `launch youtube`
 echo
-echo Inputs that are not keypresses or apps will be automatically detected as text, and typed — ie, for a streaming service\'s search engine.
+echo Inputs that are not keypresses or apps will be automatically interpreted as text, and typed — ie, for a streaming service\'s search engine.
 }
 
 while getopts ":h help" option; do
