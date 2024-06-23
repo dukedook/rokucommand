@@ -58,7 +58,7 @@ echo launching
     if ! [[ ${input[1]} =~ $re} ]]; then
         launch=$(curl "http://$1:8060/query/apps" | grep -i ${input[1]} | sed -r 's/^[^0-9]+([0-9]+).*$/\1/g')
         echo $launch
-        if [-z $launch ]; then
+        if [ -z $launch ]; then
             if [ -z $(grep -i $input[1] Roku\ Apps.txt) ]; then
                 echo "APP_ID of $input[1] not found in Roku Apps.txt."
                 else curl -d '' "http://$1:8060/install/$(grep -i ${input[1]} Roku\ Apps.txt | cut -d " " -f1)"
