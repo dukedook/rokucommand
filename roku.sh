@@ -31,7 +31,7 @@ echo $addresses
 
 if [ $addresses = '' ]; then
     echo "No Roku devices found on network."
-    end;;
+    exit;
     elif [ ${#addresses[@]} -eq 1 ]; then
         echo "Found" ${#addresses[@]} "device."
     else echo "Found" ${#addresses[@]} "devices."
