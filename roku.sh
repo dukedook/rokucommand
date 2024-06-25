@@ -25,36 +25,35 @@ done
 
 set -- $(ifconfig | grep 192.168)
 addresses=$(nmap -sL $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
+readarray -t addresses <<<"$addresses"
+echo $addresses
 
 if [ ${#addresses[@]} -eq 1 ]; then
     echo "Found" ${#addresses[@]} "device.";
     else echo "Found" ${#addresses[@]} "devices.";
 fi
-count=0
 
-while [ ${#addresses[@]} -gt $count ]; do
-    echo $count - $(nmap -sL ${addresses[$count]} | grep Roku | cut -d " " -f5,6);
-    count=$((count+1));
+for (( i=0; i<${#addresses[@]}; i++ )); do
+    echo $i - $(nmap -sL ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
 done
 echo " "
 read -r -a input -p "Type individual numbers, or 'all': "
 
 if [ "$input" = "all" ]; then
-    device=$addresses;
-    else count=0
-    while [ ${#input[@]} -gt $count ]; do
-        device=($device ${addresses[${input[$count]}]})
-        count=$((count+1))
+    read -ra device <<<${addresses[@]}
+    echo ${device[2]}
+    else for (( i=0; i<${#input[@]}; i++ )); do
+        device=($device $(addresses[${input[$i]}]))
     done
 fi
 
 re='^[0-9]+$'
 keypresses=("Home" "Rev" "Fwd" "Play" "Select" "Left" "Right" "Down" "Up" "Back" "InstantReplay" "Info" "Backspace" "Search" "Enter" "VolumeDown" "VolumeUp" "VolumeMute" "PowerOff" "PowerOn" "ChannelUp" "ChannelDown" "InputTuner" "InputHDMI1" "InputHDMI2" "InputHDMI3" "InputHDMI4" "InputAV1")
-echo "Connected to $device, now accepting inputs!"
+echo "Connected to ${device[@]}, now accepting inputs!"
 
 post() {
 if [ "${input[0]}" = "launch" ]; then
-echo launching
+echo >> launching
     if ! [[ ${input[1]} =~ $re} ]]; then
         launch=$(curl "http://$1:8060/query/apps" | grep -i ${input[1]} | sed -r 's/^[^0-9]+([0-9]+).*$/\1/g')
         echo $launch
@@ -69,7 +68,7 @@ echo launching
     fi
 
 elif [[ " ${keypresses[*],,} " =~ " ${input,,} " ]]; then
-echo keypress
+echo >> keypress
     curl -d '' http://$1:8060/keypress/$input
     if [ ${#input[@]} -gt 1 ]; then
         while [ ${input[1]} -gt 0 ]; do
@@ -79,7 +78,7 @@ echo keypress
     fi
 
 else
-echo typing
+echo >> typing
     count=0
     fullinput=${input[*]}
     while [ $(echo ${input[*]} | wc -c) -gt $count ]; do
@@ -94,9 +93,7 @@ fi
 
 while true; do
     read -r -a input
-    count=0
-    while [[ ${#device[@]} -gt $count ]]; do
-        post ${device[$count]}
-        count=$((count+1))
+    for (( i=0; i<${#device[@]}; i++ )); do
+        post ${device[$i]}
     done
 done
