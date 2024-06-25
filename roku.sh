@@ -15,6 +15,7 @@ echo
 echo Use "launch" to launch or install an app either by name or by APP_ID.  Names are taken from "Roku Apps.txt" in the same folder.  ie. `launch youtube`
 echo
 echo Inputs that are not keypresses or apps will be automatically interpreted as text, and typed — ie, for a streaming service\'s search engine.
+exit;
 }
 
 while getopts ":h help" option; do
@@ -28,9 +29,12 @@ addresses=$(nmap -sL $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
 readarray -t addresses <<<"$addresses"
 echo $addresses
 
-if [ ${#addresses[@]} -eq 1 ]; then
-    echo "Found" ${#addresses[@]} "device.";
-    else echo "Found" ${#addresses[@]} "devices.";
+if [ $addresses = '' ]; then
+    echo "No Roku devices found on network."
+    end;;
+    elif [ ${#addresses[@]} -eq 1 ]; then
+        echo "Found" ${#addresses[@]} "device."
+    else echo "Found" ${#addresses[@]} "devices."
 fi
 
 for (( i=0; i<${#addresses[@]}; i++ )); do
