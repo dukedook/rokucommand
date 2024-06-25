@@ -29,7 +29,7 @@ addresses=$(nmap -sL $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
 readarray -t addresses <<<"$addresses"
 echo $addresses
 
-if [ $addresses = '' ]; then
+if [ "$addresses" = "" ]; then
     echo "No Roku devices found on network."
     exit;
     elif [ ${#addresses[@]} -eq 1 ]; then
