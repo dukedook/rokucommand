@@ -41,13 +41,13 @@ for (( i=0; i<${#addresses[@]}; i++ )); do
     echo $i - $(nmap -sL ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
 done
 echo " "
-read -r -a input -p "Type individual numbers, or 'all': "
+read -ra input -p "Type individual numbers, or 'all': "
 
 if [ "$input" = "all" ]; then
     read -ra device <<<${addresses[@]}
     echo ${device[2]}
     else for (( i=0; i<${#input[@]}; i++ )); do
-        device=($device $(addresses[${input[$i]}]))
+        device=($device ${addresses[${input[$i]}]})
     done
 fi
 
@@ -56,6 +56,11 @@ keypresses=("Home" "Rev" "Fwd" "Play" "Select" "Left" "Right" "Down" "Up" "Back"
 echo "Connected to ${device[@]}, now accepting inputs!"
 
 post() {
+
+if [ "$input" = "" ]; then
+    input="enter"
+fi
+
 if [ "${input[0]}" = "launch" ]; then
 echo >> launching
     if ! [[ ${input[1]} =~ $re} ]]; then
@@ -96,8 +101,9 @@ fi
 }
 
 while true; do
-    read -r -a input
+    read -ra input
     for (( i=0; i<${#device[@]}; i++ )); do
+    echo "${input[@]}"
         post ${device[$i]}
     done
 done
