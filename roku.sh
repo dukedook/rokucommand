@@ -41,9 +41,9 @@ for (( i=0; i<${#addresses[@]}; i++ )); do
     echo $i - $(nmap -sL ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
 done
 echo " "
-read -ra input -p "Type individual numbers, or 'all': "
+read -ra input -p "Type individual numbers, or leave blank for all: "
 
-if [ "$input" = "all" ]; then
+if [ "$input" = "" ]; then
     read -ra device <<<${addresses[@]}
     echo ${device[2]}
     else for (( i=0; i<${#input[@]}; i++ )); do
@@ -62,7 +62,7 @@ if [ "$input" = "" ]; then
 fi
 
 if [ "${input[0]}" = "launch" ]; then
-echo >> launching
+echo ">> launching"
     if ! [[ ${input[1]} =~ $re} ]]; then
         launch=$(curl "http://$1:8060/query/apps" | grep -i ${input[1]} | sed -r 's/^[^0-9]+([0-9]+).*$/\1/g')
         echo $launch
@@ -77,7 +77,7 @@ echo >> launching
     fi
 
 elif [[ " ${keypresses[*],,} " =~ " ${input,,} " ]]; then
-echo >> keypress
+echo ">> keypress"
     curl -d '' http://$1:8060/keypress/$input
     if [ ${#input[@]} -gt 1 ]; then
         while [ ${input[1]} -gt 0 ]; do
@@ -87,7 +87,7 @@ echo >> keypress
     fi
 
 else
-echo >> typing
+echo ">> typing"
     count=0
     fullinput=${input[*]}
     while [ $(echo ${input[*]} | wc -c) -gt $count ]; do
@@ -103,7 +103,6 @@ fi
 while true; do
     read -ra input
     for (( i=0; i<${#device[@]}; i++ )); do
-    echo "${input[@]}"
         post ${device[$i]}
     done
 done
