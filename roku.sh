@@ -25,7 +25,7 @@ while getopts ":h help" option; do
 done
 
 set -- $(ifconfig | grep 192.168)
-addresses=$(nmap -sL $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
+addresses=$(nmap -sn $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
 readarray -t addresses <<<"$addresses"
 echo $addresses
 
@@ -38,7 +38,7 @@ if [ "$addresses" = "" ]; then
 fi
 
 for (( i=0; i<${#addresses[@]}; i++ )); do
-    echo $i - $(nmap -sL ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
+    echo $i - $(nmap -sn ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
 done
 echo " "
 read -ra input -p "Type individual numbers, or leave blank for all: "
