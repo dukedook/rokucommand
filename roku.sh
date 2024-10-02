@@ -1,7 +1,7 @@
 #!/bin/bash
 
 help() {
-echo usage: $0
+echo usage: $0 [IP address]
 echo
 echo "Follow instructions to connect to Roku device(s) on your current network."
 echo
@@ -24,31 +24,45 @@ while getopts ":h help" option; do
    esac
 done
 
-set -- $(ifconfig | grep 192.168)
-addresses=$(nmap -sn $2/24 | grep Roku | sed -r 's/^.*\((.+)\).*$/\1/g')
-readarray -t addresses <<<"$addresses"
-echo $addresses
+if [ -n "$1" ]; then
+echo "yes"
+    if [ -z "$(curl -f http://$1:8060/query/apps)" ]; then
+        echo $1 "is not a Roku device."
+        exit;
+        else device=$1
+    fi
+    else set -- $(ip address | grep 192.168)
+    echo "192"
+    if [ -z "$1" ]; then
+        set -- $(ip address | grep '10\.')
+        echo "10"
+    fi
+    echo $2
+    addresses=$(nmap -p8060 -Pn $2 --open | grep report | sed -r 's/^.*for (.+)$/\1/g')
+    readarray -t addresses <<<"$addresses"
+    echo $addresses
 
-if [ "$addresses" = "" ]; then
-    echo "No Roku devices found on network."
-    exit;
-    elif [ ${#addresses[@]} -eq 1 ]; then
-        echo "Found" ${#addresses[@]} "device."
-    else echo "Found" ${#addresses[@]} "devices."
-fi
+    if [ "$addresses" = "" ]; then
+        echo "No Roku devices found on network."
+        exit;
+        elif [ ${#addresses[@]} -eq 1 ]; then
+            echo "Found" ${#addresses[@]} "device."
+        else echo "Found" ${#addresses[@]} "devices."
+    fi
 
-for (( i=0; i<${#addresses[@]}; i++ )); do
-    echo $i - $(nmap -sn ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
-done
-echo " "
-read -ra input -p "Type individual numbers, or leave blank for all: "
-
-if [ "$input" = "" ]; then
-    read -ra device <<<${addresses[@]}
-    echo ${device[2]}
-    else for (( i=0; i<${#input[@]}; i++ )); do
-        device=($device ${addresses[${input[$i]}]})
+    for (( i=0; i<${#addresses[@]}; i++ )); do
+        echo $i - $(nmap -sn ${addresses[$i]} | grep Roku | cut -d " " -f5,6);
     done
+    echo " "
+    read -ra input -p "Type individual numbers, or leave blank for all: "
+
+    if [ "$input" = "" ]; then
+        read -ra device <<<${addresses[@]}
+        echo ${device[2]}
+        else for (( i=0; i<${#input[@]}; i++ )); do
+            device=($device ${addresses[${input[$i]}]})
+        done
+    fi
 fi
 
 re='^[0-9]+$'
