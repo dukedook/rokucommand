@@ -32,13 +32,10 @@ echo "yes"
         else device=$1
     fi
     else set -- $(ip address | grep 192.168)
-    echo "192"
     if [ -z "$1" ]; then
         set -- $(ip address | grep '10\.')
-        echo "10"
     fi
-    echo $2
-    addresses=$(nmap -p8060 -Pn $2 --open | grep report | sed -r 's/^.*for (.+)$/\1/g')
+    addresses=$(nmap -p8060 -Pn $2 --open | grep report | sed -r 's/^.*[^1-9]([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+).*$/\1\.\2\.\3\.\4/g')
     readarray -t addresses <<<"$addresses"
     echo $addresses
 
