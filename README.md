@@ -1,4 +1,7 @@
 # rokucommand
+
+ NOTE: This exploit was marked as a vulnerability by Roku and has since been patched; therefore, this script no longer works. :(
+ 
  Follow instructions to connect to Roku device(s) on your current network.
 
  Input when prompted:
